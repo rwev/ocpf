@@ -2,8 +2,7 @@
 
 ## What This Is
 
-OCPF (Open Code Portfolio Framework) is a **no-code, LLM-driven** paper trading
-portfolio management system. There is no source code, no build system, no tests.
+OCPF (Open Code Portfolio Framework) is a **no-code, LLM-driven** portfolio management system. There is no source code, no build system, no tests.
 The entire system is markdown files, templates, and OpenCode CLI commands. The LLM
 is the runtime.
 

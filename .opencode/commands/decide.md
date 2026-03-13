@@ -5,7 +5,7 @@ agent: build
 
 # Portfolio Decision & Execution
 
-Review the current portfolio state and all watchlist theses, then autonomously execute portfolio management decisions: buy new positions, sell or trim existing positions, and prune the watchlist. All trades are paper trades.
+Review the current portfolio state and all watchlist theses, then autonomously execute portfolio management decisions: buy new positions, sell or trim existing positions, and prune the watchlist.
 
 ## Context
 
