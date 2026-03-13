@@ -12,6 +12,7 @@ watchlist/*.md
 log/decisions/*.md
 !log/decisions/_template.md
 !log/decisions/_prune_template.md
+!log/decisions/_summary_template.md
 
 # Review logs (but track template)
 log/reviews/*.md
@@ -22,8 +23,6 @@ log/risk/*.md
 !log/risk/_template.md
 
 # Performance data (but track template)
-performance/RETURNS.md
-performance/BENCHMARK.md
 performance/SNAPSHOTS.md
 
 # Archives — all state-specific

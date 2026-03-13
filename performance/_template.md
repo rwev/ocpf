@@ -13,8 +13,6 @@
 | Portfolio Value | ${value} |
 | Starting Capital | ${starting capital from CONFIG} |
 | Total Return | {X.XX}% (${dollar return}) |
-| Benchmark (SPY) Return | {X.XX}% |
-| Alpha | {X.XX}% |
 | Cash | ${cash} ({weight}%) |
 | Positions | {count} / {max} |
 
@@ -73,8 +71,8 @@
 
 ## Portfolio Value Over Time
 
-| Date | Portfolio Value | Benchmark | Alpha |
-|------|----------------|-----------|-------|
+| Date | Portfolio Value | Total Return % |
+|------|----------------|---------------|
 
 ---
 

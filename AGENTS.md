@@ -53,8 +53,6 @@ log/
   risk/_template.md          # Risk assessment format
 performance/
   _template.md               # Performance report format
-  RETURNS.md                 # Return history (gitignored)
-  BENCHMARK.md               # Benchmark tracking (gitignored)
   SNAPSHOTS.md               # Portfolio value snapshots (gitignored)
 .opencode/commands/          # All slash commands
 ```

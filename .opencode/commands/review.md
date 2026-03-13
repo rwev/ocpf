@@ -36,7 +36,7 @@ Portfolio state format:
 
 ### Step 1: Fetch Live Prices
 
-Fetch the current market price from the web for every position in PORTFOLIO.md and the benchmark ticker from CONFIG.md.
+Fetch the current market price from the web for every position in PORTFOLIO.md.
 
 ### Step 2: Recalculate Portfolio State
 
@@ -94,7 +94,7 @@ Write findings to `log/risk/{YYYY-MM-DD}.md` using the risk assessment template 
 
 ### Step 7: Update Performance Tracking
 
-Append today's data as a new row to `performance/SNAPSHOTS.md` and `performance/BENCHMARK.md`, following each file's existing column headers.
+Append today's data as a new row to `performance/SNAPSHOTS.md`, following the file's existing column headers.
 
 ### Step 8: Generate Review Summary
 

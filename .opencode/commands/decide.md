@@ -60,7 +60,7 @@ Record the current mode (Normal / Defensive / Hard Stop) in the decision summary
 
 ### Step 1: Fetch Live Prices
 
-Fetch current market prices from the web for every held position, every Buy-verdict ticker in the watchlist index, and the benchmark ticker from CONFIG.md.
+Fetch current market prices from the web for every held position and every Buy-verdict ticker in the watchlist index.
 
 ### Step 2: Evaluate Existing Positions (Sell/Trim/Hold)
 
@@ -150,7 +150,7 @@ If any items were pruned, create `log/decisions/{YYYY-MM-DD}-PRUNE-WATCHLIST.md`
 
 After all trades and logging:
 1. Rewrite PORTFOLIO.md with the final state, conforming to the portfolio state template loaded above
-2. Update all portfolio-level metrics (Total Return, Alpha, Drawdown, etc.)
+2. Update all portfolio-level metrics (Total Return, etc.)
 3. Rewrite `watchlist/_index.md` — remove rows for tickers moved to closed/ or passed/, update the Active Items count and Last Updated date
 4. Append a snapshot row to `performance/SNAPSHOTS.md`
 

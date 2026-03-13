@@ -5,7 +5,7 @@ agent: build
 
 # Portfolio Performance Report
 
-Generate a comprehensive performance report for the portfolio. Compile returns, benchmark comparison, risk metrics, trade history, and portfolio analytics.
+Generate a comprehensive performance report for the portfolio. Compile returns, risk metrics, trade history, and portfolio analytics.
 
 ## Context
 
@@ -19,8 +19,6 @@ Watchlist index:
 !`cat watchlist/_index.md`
 
 Performance data:
-!`cat performance/RETURNS.md`
-!`cat performance/BENCHMARK.md`
 !`cat performance/SNAPSHOTS.md`
 
 Recent decision logs:
@@ -49,7 +47,7 @@ Report format:
 
 ### Step 1: Fetch Current Data
 
-Fetch current market prices from the web for all held positions and the benchmark ticker from CONFIG.md. Recalculate current portfolio value with live prices.
+Fetch current market prices from the web for all held positions. Recalculate current portfolio value with live prices.
 
 ### Step 2: Calculate All Report Metrics
 
@@ -63,6 +61,4 @@ Calculate all metrics needed to fill the report template. Use:
 
 Output the report using the template loaded above. Fill in all sections with calculated data. For the Watchlist Status section, use counts from `watchlist/_index.md`, `closed/`, and `passed/`.
 
-### Step 4: Update Returns Log
 
-Append today's return data as a new row to `performance/RETURNS.md`, following the file's existing column headers.

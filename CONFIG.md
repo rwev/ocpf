@@ -12,9 +12,6 @@ Grow capital aggressive over the 1-5 year term by investing in high-quality US-l
 ## Risk Level
 **Aggressive** (Conservative | Moderate | Aggressive)
 
-## Benchmark
-**SPY** (S&P 500 ETF)
-
 ## Portfolio Constraints
 - **Max Positions:** 15
 - **Min Positions:** 5

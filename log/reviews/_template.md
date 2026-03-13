@@ -2,8 +2,6 @@
 
 **Total Value:** ${value}
 **Total Return:** {X.XX}%
-**Benchmark (SPY):** {X.XX}%
-**Alpha:** {X.XX}%
 **Cash:** ${cash} ({weight}%)
 **Positions:** {count} / {max}
 **Drawdown from HWM:** {X.XX}%

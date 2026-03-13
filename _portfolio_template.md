@@ -20,7 +20,5 @@
 
 ## Key Metrics
 - **Total Return:** {X.XX}%
-- **Benchmark Return (SPY):** {X.XX}%
-- **Alpha:** {X.XX}%
 - **Positions Count:** {count} / {max} max
 - **Cash Weight:** {X.XX}%
