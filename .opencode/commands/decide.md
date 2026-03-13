@@ -115,6 +115,9 @@ Review all items in `watchlist/_index.md` and evaluate for pruning:
 1. **Reject items with broken thesis:** The investment case is no longer valid or the company's situation has materially deteriorated
 2. **Reject items that are a poor fit:** No longer align with the portfolio's objective or risk level
 3. **Reject stale items:** Last Analyzed date exceeds the Stale Threshold in CONFIG.md and the item has a Pass or low-conviction verdict
+4. **Reject items that are a pass or low conviction**: A **Pass** verdict or **Low** conviction should be immediately pruned.
+
+For **pruned watchlist items** (never bought, rejected): Add a dated rejection reason to the file's ANALYZE History, then `mv watchlist/{TICKER}.md passed/{TICKER}.md`. Remove row from _index.md.
 
 ### Step 5: Execute All Trades
 
@@ -125,8 +128,6 @@ For each trade, update PORTFOLIO.md's Positions table and Cash accordingly:
 - **TRIM:** Reduce shares in position, add proceeds to Cash.
 - **BUY (initial):** Add new position at half target weight (record Ticker, Shares, Avg Cost, Current Price, Date Acquired today, Position Stage: Initial). Subtract cost from Cash.
 - **BUY (scale-up):** Increase existing position to full target weight (update Shares, recalculate Avg Cost, Position Stage: Full). Subtract cost from Cash.
-
-For **pruned watchlist items** (never bought, rejected): Add a dated rejection reason to the file's ANALYZE History, then `mv watchlist/{TICKER}.md passed/{TICKER}.md`. Remove row from _index.md.
 
 After all trades, recalculate all portfolio metrics and verify all constraints in CONFIG.md are satisfied.
 
