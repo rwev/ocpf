@@ -18,6 +18,9 @@ Current portfolio state:
 Watchlist index (for cross-referencing held position theses and recommendations):
 !`cat watchlist/_index.md`
 
+Portfolio value history (used to derive High Watermark for circuit breaker checks):
+!`cat performance/SNAPSHOTS.md`
+
 ## Output Templates
 
 Review summary format:
@@ -25,6 +28,9 @@ Review summary format:
 
 Risk assessment format:
 !`cat log/risk/_template.md`
+
+Portfolio state format:
+!`cat _portfolio_template.md`
 
 ## Workflow
 
@@ -34,11 +40,11 @@ Fetch the current market price from the web for every position in PORTFOLIO.md a
 
 ### Step 2: Recalculate Portfolio State
 
-Recalculate all position-level metrics (market value, weight, gain/loss $, gain/loss %) and portfolio-level metrics (invested, total value, cash weight, total return, high watermark, drawdown from HWM) using live prices. Rebuild the Allocation Summary table by GICS sector.
+Recalculate all position-level metrics (market value, weight, gain/loss $, gain/loss %) and portfolio-level metrics (invested, total value, cash weight, total return) using live prices. Rebuild the Allocation Summary table by GICS sector.
 
 ### Step 3: Update PORTFOLIO.md
 
-Rewrite PORTFOLIO.md with all recalculated values. Set "Last Updated" to today's date.
+Rewrite PORTFOLIO.md with all recalculated values, conforming to the portfolio state template loaded above. Set "Last Updated" to today's date.
 
 ### Step 4: Check Constraints and Circuit Breakers
 
@@ -54,7 +60,7 @@ Check every constraint in CONFIG.md's Portfolio Constraints section, including:
 
 Record each as PASS or VIOLATION with details, using the Constraint Check Results table in the risk template.
 
-**Check circuit breakers:** Calculate drawdown from HWM. If it exceeds the Defensive Mode or Hard Stop thresholds in CONFIG.md, prominently flag the current mode and its implications in the review summary. Recommend immediate `/decide` execution if a circuit breaker is active.
+**Check circuit breakers:** Derive the High Watermark (HWM) from `performance/SNAPSHOTS.md` — it is the maximum Total Value across all snapshot rows. Calculate drawdown: (Current Total Value - HWM) / HWM. If drawdown exceeds the Defensive Mode or Hard Stop thresholds in CONFIG.md, prominently flag the current mode and its implications in the review summary. Recommend immediate `/decide` execution if a circuit breaker is active.
 
 ### Step 5: Cross-Reference Watchlist
 

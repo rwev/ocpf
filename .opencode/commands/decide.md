@@ -18,6 +18,9 @@ Current portfolio state:
 Watchlist index (summary of all active watchlist items):
 !`cat watchlist/_index.md`
 
+Portfolio value history (used to derive High Watermark for circuit breaker checks):
+!`cat performance/SNAPSHOTS.md`
+
 Recently closed positions (to check for re-entry guard — note filenames and dates):
 !`ls -l closed/ 2>/dev/null || echo "No closed positions."`
 
@@ -37,11 +40,17 @@ Trade decision format:
 Watchlist pruning format:
 !`cat log/decisions/_prune_template.md`
 
+Decision execution summary format:
+!`cat log/decisions/_summary_template.md`
+
+Portfolio state format:
+!`cat _portfolio_template.md`
+
 ## Workflow
 
 ### Step 0: Check Circuit Breakers
 
-Before any other evaluation, calculate the current portfolio drawdown from the High Watermark in PORTFOLIO.md.
+Before any other evaluation, derive the High Watermark (HWM) from `performance/SNAPSHOTS.md` — it is the maximum Total Value across all snapshot rows. Then calculate the current portfolio drawdown: (Current Total Value - HWM) / HWM.
 
 - **Hard Stop (drawdown exceeds Hard Stop threshold in CONFIG.md):** Liquidate ALL positions immediately. Skip Steps 2–4 entirely — proceed directly to Step 5 with SELL orders for every held position. No new buys are permitted until drawdown recovers above the Defensive Mode threshold.
 - **Defensive Mode (drawdown exceeds Defensive Mode threshold in CONFIG.md):** No new BUY orders are permitted in this execution. Step 3 is skipped entirely. In Step 2, additionally flag positions for trimming to raise cash to the Defensive Mode cash target specified in CONFIG.md, prioritizing lowest-conviction positions first.
@@ -140,42 +149,11 @@ If any items were pruned, create `log/decisions/{YYYY-MM-DD}-PRUNE-WATCHLIST.md`
 ### Step 7: Final Portfolio and Index Update
 
 After all trades and logging:
-1. Rewrite PORTFOLIO.md with the final state
+1. Rewrite PORTFOLIO.md with the final state, conforming to the portfolio state template loaded above
 2. Update all portfolio-level metrics (Total Return, Alpha, Drawdown, etc.)
 3. Rewrite `watchlist/_index.md` — remove rows for tickers moved to closed/ or passed/, update the Active Items count and Last Updated date
 4. Append a snapshot row to `performance/SNAPSHOTS.md`
 
 ### Step 8: Decision Summary Output
 
-Output a complete summary of all actions taken:
-
-```
-## DECIDE Execution Summary — {YYYY-MM-DD}
-
-**Mode:** Normal / Defensive / Hard Stop
-**Cash Drag Warning:** Yes (XX%) / No
-
-### Trades Executed
-| Action | Ticker | Shares | Price | Value | Position Stage | Reason |
-|--------|--------|--------|-------|-------|---------------|--------|
-
-### Positions Closed (moved to closed/)
-| Ticker | Reason |
-|--------|--------|
-
-### Watchlist Pruned (moved to passed/)
-| Ticker | Reason |
-|--------|--------|
-
-### Skipped Buy Candidates
-| Ticker | Reason Skipped |
-|--------|----------------|
-
-### Portfolio After
-- **Total Value:** ${value}
-- **Cash:** ${cash} ({weight}%)
-- **Positions:** {count}
-- **Total Return:** {X.XX}%
-- **Drawdown from HWM:** {X.XX}%
-- **Active Watchlist Items:** {count}
-```
+Output a complete summary of all actions taken, conforming to the decision execution summary template loaded above.

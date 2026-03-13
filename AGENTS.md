@@ -37,6 +37,7 @@ OpenCode (e.g., `/screen`, `/analyze AAPL`). They use OpenCode's command feature
 ```
 CONFIG.md                    # Master config: objective, constraints, risk level
 PORTFOLIO.md                 # Current portfolio state (gitignored)
+_portfolio_template.md       # Template for PORTFOLIO.md format
 watchlist/
   _template.md               # Template for all ticker analysis files
   _index.md                   # Summary table of active items (gitignored)
@@ -47,6 +48,7 @@ log/
   decisions/
     _template.md             # Trade decision log format
     _prune_template.md       # Watchlist pruning log format
+    _summary_template.md     # /decide execution summary format
   reviews/_template.md       # Review summary format
   risk/_template.md          # Risk assessment format
 performance/
@@ -102,6 +104,14 @@ Active watchlist files exist regardless of whether the ticker is held.
 PORTFOLIO.md determines what is currently held. The watchlist file's verdict
 (Buy/Hold/Pass/Reject) is the thesis status, not the holding status. The Positions
 table includes a **Stage** column (Initial / Full) to track scaling-in progress.
+
+### 8. High Watermark Is Derived from SNAPSHOTS.md
+
+The High Watermark (HWM) is NOT stored in PORTFOLIO.md. It is computed at runtime
+by finding the maximum Total Value across all rows in `performance/SNAPSHOTS.md`.
+`/decide` and `/review` both derive HWM this way when checking circuit breakers
+and calculating drawdown. This prevents stale or corrupted HWM values from
+persisting across rewrites.
 
 ## Risk Management Rules
 
