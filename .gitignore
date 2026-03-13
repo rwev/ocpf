@@ -1,0 +1,31 @@
+# Track: commands, config, templates
+# Ignore: portfolio state, logs, performance data, watchlist analyses, archives
+
+# Portfolio state
+PORTFOLIO.md
+
+# Watchlist ticker files and index (but track the template)
+watchlist/*.md
+!watchlist/_template.md
+
+# Decision logs (but track templates)
+log/decisions/*.md
+!log/decisions/_template.md
+!log/decisions/_prune_template.md
+
+# Review logs (but track template)
+log/reviews/*.md
+!log/reviews/_template.md
+
+# Risk logs (but track template)
+log/risk/*.md
+!log/risk/_template.md
+
+# Performance data (but track template)
+performance/RETURNS.md
+performance/BENCHMARK.md
+performance/SNAPSHOTS.md
+
+# Archives — all state-specific
+closed/*.md
+passed/*.md
