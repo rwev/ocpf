@@ -18,6 +18,12 @@
 | Circuit Breaker — Defensive | PASS / ACTIVE | {details} |
 | Circuit Breaker — Hard Stop | PASS / ACTIVE | {details} |
 
+## Macro Risk Factors
+- **Interest Rate Risk:** {Low / Medium / High} — {current rate trajectory and impact on growth stock valuations and discount rates}
+- **Market Breadth:** {Healthy / Narrowing / Weak} — {is the rally broad-based or concentrated in few names}
+- **Volatility Regime:** {Low / Normal / Elevated} — {VIX level and trend, implications for position sizing}
+- **Portfolio Macro Sensitivity:** {1-2 sentences — e.g., "portfolio is duration-heavy with high-multiple growth names; rising rates are a headwind to multiples"}
+
 ## Thematic Concentration
 | Theme | Tickers | Combined Weight |
 |-------|---------|----------------|
@@ -36,4 +42,4 @@
 |--------|--------------|-------------|-------------------|
 
 ## Observations
-{free-form risk commentary}
+{free-form risk commentary — include macro context and how it interacts with portfolio positioning}

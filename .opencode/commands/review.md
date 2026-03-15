@@ -5,7 +5,7 @@ agent: build
 
 # Portfolio Review
 
-Conduct a comprehensive review of the current portfolio. Update all prices to live market data, verify adherence to portfolio constraints, assess risk, and produce a dated review summary.
+Conduct a comprehensive review of the current portfolio. Update all prices to live market data, assess macro conditions, verify adherence to portfolio constraints, compare performance to benchmark, assess risk, and produce a dated review summary.
 
 ## Context
 
@@ -34,19 +34,38 @@ Portfolio state format:
 
 ## Workflow
 
-### Step 1: Fetch Live Prices
+### Step 1: Fetch Live Prices and Benchmark
 
-Fetch the current market price from the web for every position in PORTFOLIO.md.
+Fetch the current market price from the web for every position in PORTFOLIO.md. Also fetch the current SPY price for benchmark comparison.
 
-### Step 2: Recalculate Portfolio State
+### Step 2: Fetch Macro Data
+
+Fetch current macro indicators to populate the Macro Backdrop section:
+- **Fed Funds Rate:** Current rate and recent direction (rising / holding / cutting)
+- **10Y Treasury Yield:** Current yield and recent trend
+- **VIX:** Current level
+- **Market breadth and regime:** Is the market in risk-on, neutral, or risk-off mode? Is the rotation favoring growth or value?
+
+Determine the market regime and assess implications for the growth-oriented portfolio. This is informational context — it does not gate any actions but informs the risk assessment and recommended actions.
+
+### Step 3: Recalculate Portfolio State
 
 Recalculate all position-level metrics (market value, weight, gain/loss $, gain/loss %) and portfolio-level metrics (invested, total value, cash weight, total return) using live prices. Rebuild the Allocation Summary table by GICS sector.
 
-### Step 3: Update PORTFOLIO.md
+### Step 4: Update PORTFOLIO.md
 
 Rewrite PORTFOLIO.md with all recalculated values, conforming to the portfolio state template loaded above. Set "Last Updated" to today's date.
 
-### Step 4: Check Constraints and Circuit Breakers
+### Step 5: Benchmark Comparison
+
+Calculate benchmark-relative performance:
+- **Portfolio return since inception** vs **SPY return since inception** (use inception SPY price from first SNAPSHOTS.md row, or fetch historical if not available)
+- **Alpha** = Portfolio return - SPY return
+- **Per-position relative performance:** For each held position, calculate its return vs SPY over the same holding period
+
+Include benchmark comparison in the review summary.
+
+### Step 6: Check Constraints and Circuit Breakers
 
 Check every constraint in CONFIG.md's Portfolio Constraints section, including:
 - Position count (min/max)
@@ -62,40 +81,42 @@ Record each as PASS or VIOLATION with details, using the Constraint Check Result
 
 **Check circuit breakers:** Derive the High Watermark (HWM) from `performance/SNAPSHOTS.md` — it is the maximum Total Value across all snapshot rows. Calculate drawdown: (Current Total Value - HWM) / HWM. If drawdown exceeds the Defensive Mode or Hard Stop thresholds in CONFIG.md, prominently flag the current mode and its implications in the review summary. Recommend immediate `/decide` execution if a circuit breaker is active.
 
-### Step 5: Cross-Reference Watchlist
+### Step 7: Cross-Reference Watchlist
 
 For each held position, check `watchlist/_index.md` for the current thesis status:
 - Note any held positions where conviction has dropped to Low
 - Note any held positions where verdict has changed to Pass or Reject
 - Note any held positions with stale Last Analyzed dates (exceeding Stale Threshold in CONFIG.md)
 - Note any held positions that do NOT appear in the watchlist index (missing thesis)
-- Note any held positions still at **Initial stage** (half weight) that may be ready for scale-up confirmation
+- Note any held positions still at **Initial stage** (half weight) — check their Scale-Up Tracking section for which confirmation criteria are met and whether they qualify for scale-up (2 of 4 criteria per CONFIG.md)
 - Note any held positions where the current price has reached or exceeded the **Price Target** in the watchlist file
+- Note any held positions trading below their **50-day MA** (trend filter concern for future decisions)
 
 Include these findings in the review summary and recommended actions.
 
-### Step 6: Risk Assessment
+### Step 8: Risk Assessment
 
 Summarize the portfolio's risk posture:
 - Current drawdown from high watermark and **circuit breaker status** (Normal / Defensive / Hard Stop)
 - Largest single-position risk (biggest weight, biggest loser)
 - Sector concentration risk
 - **Thematic concentration risk** — list the top 3 themes by portfolio weight
+- **Macro risk factors** — interest rate risk for the portfolio, market breadth, volatility regime, portfolio macro sensitivity
 - Any stop-loss triggers approaching or breached (flag positions within 5% of the threshold)
 - Any positions that have hit their price target
 - Top 3 risk factors for the portfolio right now
 
 **Assign urgency to each recommended action:**
 - **URGENT** — requires immediate `/decide` execution (circuit breaker active, stop-loss breached, constraint violation)
-- **SOON** — should be addressed in the next `/decide` cycle (stale thesis, approaching stop-loss, price target reached)
-- **MONITOR** — informational, watch on next review (low conviction, theme crowding)
+- **SOON** — should be addressed in the next `/decide` cycle (stale thesis, approaching stop-loss, price target reached, scale-up candidates ready)
+- **MONITOR** — informational, watch on next review (low conviction, theme crowding, macro headwinds, trend filter concerns)
 
 Write findings to `log/risk/{YYYY-MM-DD}.md` using the risk assessment template loaded above.
 
-### Step 7: Update Performance Tracking
+### Step 9: Update Performance Tracking
 
-Append today's data as a new row to `performance/SNAPSHOTS.md`, following the file's existing column headers.
+Append today's data as a new row to `performance/SNAPSHOTS.md`, following the file's existing column headers. Include SPY price and SPY return since inception.
 
-### Step 8: Generate Review Summary
+### Step 10: Generate Review Summary
 
-Write a review summary to `log/reviews/{YYYY-MM-DD}.md` using the review template loaded above. Include watchlist cross-reference findings in the Recommended Actions section.
+Write a review summary to `log/reviews/{YYYY-MM-DD}.md` using the review template loaded above. Include macro backdrop, benchmark comparison, watchlist cross-reference findings, and all recommended actions with urgency tags.

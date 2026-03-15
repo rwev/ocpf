@@ -48,9 +48,9 @@ Portfolio state format:
 
 ## Workflow
 
-### Step 0: Check Circuit Breakers
+### Step 0: Check Circuit Breakers and Macro Context
 
-Before any other evaluation, derive the High Watermark (HWM) from `performance/SNAPSHOTS.md` — it is the maximum Total Value across all snapshot rows. Then calculate the current portfolio drawdown: (Current Total Value - HWM) / HWM.
+**Circuit Breakers:** Before any other evaluation, derive the High Watermark (HWM) from `performance/SNAPSHOTS.md` — it is the maximum Total Value across all snapshot rows. Then calculate the current portfolio drawdown: (Current Total Value - HWM) / HWM.
 
 - **Hard Stop (drawdown exceeds Hard Stop threshold in CONFIG.md):** Liquidate ALL positions immediately. Skip Steps 2–4 entirely — proceed directly to Step 5 with SELL orders for every held position. No new buys are permitted until drawdown recovers above the Defensive Mode threshold.
 - **Defensive Mode (drawdown exceeds Defensive Mode threshold in CONFIG.md):** No new BUY orders are permitted in this execution. Step 3 is skipped entirely. In Step 2, additionally flag positions for trimming to raise cash to the Defensive Mode cash target specified in CONFIG.md, prioritizing lowest-conviction positions first.
@@ -58,9 +58,11 @@ Before any other evaluation, derive the High Watermark (HWM) from `performance/S
 
 Record the current mode (Normal / Defensive / Hard Stop) in the decision summary.
 
+**Macro Context (inform-only):** Fetch a brief macro snapshot — current Fed Funds rate direction, 10Y Treasury yield trend, VIX level, and whether the market regime favors growth or value. This is NOT a gate — it does not block any trades. Record the macro backdrop in the decision summary for context. If macro conditions are notably hostile for growth stocks (e.g., sharply rising rates, VIX spike), note this as a caution flag but do not override the systematic rules.
+
 ### Step 1: Fetch Live Prices
 
-Fetch current market prices from the web for every held position and every Buy-verdict ticker in the watchlist index.
+Fetch current market prices from the web for every held position and every Buy-verdict ticker in the watchlist index. Also fetch the current SPY price for benchmark tracking.
 
 ### Step 2: Evaluate Existing Positions (Sell/Trim/Hold)
 
@@ -69,19 +71,19 @@ For each position currently held in PORTFOLIO.md:
 1. **Find the watchlist file:** Read `watchlist/{TICKER}.md`
    - **If no file exists:** The position has no backing thesis. Flag for **SELL**.
 2. **Check thesis integrity:**
-   - Is the verdict Buy or Hold? → Thesis intact
-   - Has the verdict changed to Pass or Reject? → Thesis broken → **SELL**
+   - Is the verdict Buy or Hold? -> Thesis intact
+   - Has the verdict changed to Pass or Reject? -> Thesis broken -> **SELL**
 3. **Check stop-loss:** Calculate current gain/loss % from cost basis. If loss exceeds the Position Stop-Loss threshold in CONFIG.md:
    - **Default action is SELL.** To override and HOLD, the watchlist file must contain an explicit section in the thesis addressing why the loss is temporary, with a revised price target. Log the override justification in the decision log.
-   - If no such justification exists in the thesis → **SELL** (mandatory).
+   - If no such justification exists in the thesis -> **SELL** (mandatory).
 4. **Check price target:** If the current price has reached or exceeded the Price Target in the watchlist file's Verdict section:
    - **TRIM** by at least half the position (take profits).
-   - If conviction has dropped to Low or the thesis doesn't support further upside → **SELL** the full position.
+   - If conviction has dropped to Low or the thesis doesn't support further upside -> **SELL** the full position.
    - Log the price target trigger in the decision log.
 5. **Check portfolio constraints:**
-   - If position weight exceeds Max Single Position Weight → **TRIM** to target weight
-   - If sector weight exceeds Max Sector Weight → **TRIM** weakest conviction position in that sector
-   - If thematic concentration exceeds Max Thematic Concentration in CONFIG.md → **TRIM** the weakest-conviction position in that theme
+   - If position weight exceeds Max Single Position Weight -> **TRIM** to target weight
+   - If sector weight exceeds Max Sector Weight -> **TRIM** weakest conviction position in that sector
+   - If thematic concentration exceeds Max Thematic Concentration in CONFIG.md -> **TRIM** the weakest-conviction position in that theme
 6. **Opportunity-cost evaluation:** After evaluating all held positions and all buy candidates (Step 3), compare: if a held position has Low conviction and there is a buy candidate with High conviction that cannot be funded, flag the Low-conviction position for **SELL** to free capital. Only do this when the conviction gap is at least two tiers (Low held vs High candidate).
 
 Compile a list of SELL and TRIM actions with share quantities and reasoning.
@@ -98,24 +100,28 @@ For each ticker in `watchlist/_index.md` with Verdict = **Buy**:
 2. **Check conviction:** Rank remaining candidates by conviction level (High > Medium > Low). Low conviction candidates are only eligible if cash drag warning is active.
 3. **Check re-entry guard:** For any ticker that also has a file in `closed/`, check the Sold date in the file's ANALYZE History (the last dated entry before it was moved). If the sale occurred within the Re-Entry Cooldown period defined in CONFIG.md, **SKIP** to avoid sell-then-rebuy churn.
 4. **Check valuation discipline:** Read the watchlist file. The current price must be at or below the Price Target. If the stock has already run past its target, **SKIP** — do not chase. Prefer candidates trading meaningfully below their price target (larger margin of safety).
-5. **Check portfolio fit:**
+5. **Check trend filter:** Check the stock's current price relative to its 50-day moving average (from the Technical Profile section in the watchlist file, or fetch live if stale). If the stock is trading below its 50-day MA, **SKIP** — do not buy into a confirmed downtrend. Log the skip reason as "Failed trend filter (below 50-day MA)."
+6. **Check portfolio fit:**
    - Would adding this position violate Max Positions?
    - Would adding this position violate Max Sector Weight?
    - Would adding this position violate Max Thematic Concentration? (Check the Themes field in the watchlist file against themes of existing positions.)
    - Is there enough cash (after reserving Min Cash Reserve)?
-6. **Calculate position size using conviction tiers from CONFIG.md:**
+7. **Calculate position size using conviction tiers from CONFIG.md:**
    - Look up the conviction level and its corresponding target weight range in CONFIG.md's Position Sizing table
    - **New positions enter at half the target weight** (initial/starter position) per CONFIG.md's scaling-in rule
    - Ensure half-weight does not exceed Max Single Position Weight
    - Calculate number of shares: floor(Initial Position Value / Current Price)
    - Record in the decision log that this is an **initial position** (to be scaled up later)
 
-For **existing positions at initial (half) weight** that have confirmed (price holding above entry, positive development, or thesis reaffirmed on reanalysis):
-   - These are eligible for **scale-up** to full target weight
-   - Calculate additional shares needed: floor((Full Target Value - Current Position Value) / Current Price)
-   - Record in the decision log that this is a **scale-up to full position**
+**Scale-up evaluation** for existing positions at Initial (half) weight:
+- Read the **Scale-Up Tracking** section in the watchlist file
+- Check the formalized confirmation criteria from CONFIG.md's Scale-Up Confirmation section
+- The position is eligible for scale-up **ONLY if at least 2 of the 4 confirmation criteria are met** (price confirmation, earnings confirmation, thesis confirmation, catalyst confirmation)
+- If fewer than 2 criteria are met, **SKIP** the scale-up and note which criteria are still pending
+- If eligible, calculate additional shares needed: floor((Full Target Value - Current Position Value) / Current Price)
+- Record in the decision log that this is a **scale-up to full position** and list which confirmation criteria were satisfied
 
-Rank all eligible buys and scale-ups by conviction and portfolio fit. Select the top candidates that fit within cash and constraints.
+**Rank all eligible buys and scale-ups by Expected Return** (from the Verdict section of the watchlist file) rather than conviction alone. Expected Return incorporates both upside magnitude and probability weighting from the scenario valuation, producing a better capital allocation signal. Use conviction as a tiebreaker when expected returns are within 5 percentage points of each other. Select the top candidates that fit within cash and constraints.
 
 ### Step 4: Prune Watchlist
 
@@ -142,7 +148,7 @@ After all trades, recalculate all portfolio metrics and verify all constraints i
 
 ### Step 6: Log Every Decision
 
-For EACH trade executed, create a decision log file at `log/decisions/{YYYY-MM-DD}-{ACTION}-{TICKER}.md` using the trade decision template loaded above. For stop-loss overrides, include the justification. For price-target trims, note the target and current price. For opportunity-cost sells, name the higher-conviction replacement. For scale-ups, note "Scale-up from initial to full position."
+For EACH trade executed, create a decision log file at `log/decisions/{YYYY-MM-DD}-{ACTION}-{TICKER}.md` using the trade decision template loaded above. For stop-loss overrides, include the justification. For price-target trims, note the target and current price. For opportunity-cost sells, name the higher-conviction replacement. For scale-ups, note "Scale-up from initial to full position" and list the confirmation criteria that were met.
 
 If any items were pruned, create `log/decisions/{YYYY-MM-DD}-PRUNE-WATCHLIST.md` using the pruning template loaded above.
 
@@ -152,8 +158,12 @@ After all trades and logging:
 1. Rewrite PORTFOLIO.md with the final state, conforming to the portfolio state template loaded above
 2. Update all portfolio-level metrics (Total Return, etc.)
 3. Rewrite `watchlist/_index.md` — remove rows for tickers moved to closed/ or passed/, update the Active Items count and Last Updated date
-4. Append a snapshot row to `performance/SNAPSHOTS.md`
+4. Append a snapshot row to `performance/SNAPSHOTS.md` including the current SPY price and SPY return since inception
 
 ### Step 8: Decision Summary Output
 
-Output a complete summary of all actions taken, conforming to the decision execution summary template loaded above.
+Output a complete summary of all actions taken, conforming to the decision execution summary template loaded above. Include:
+- Macro backdrop context
+- Any trend filter skips (candidates that failed the 50-day MA gate)
+- Any scale-up skips (positions that did not yet meet 2-of-4 confirmation criteria)
+- Expected return ranking used for buy prioritization

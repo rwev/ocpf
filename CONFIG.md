@@ -47,6 +47,32 @@ Default target weights are determined by conviction level. These are starting po
 - **Requirement:** ALL agents MUST fetch CURRENT live prices from the web. Never rely on prices stored in files as current — they are historical records only.
 - **Sources:** Yahoo Finance, Google Finance, Finviz, or any publicly available financial data source.
 
+## Screening Filters
+Quantitative hard gates applied during `/screen` — candidates must pass ALL filters to be considered. Any single failure eliminates the candidate.
+- **Min Market Cap:** $2B
+- **Min Revenue Growth (YoY):** 10%
+- **Max Forward P/E:** 60 (prevents extreme valuation entries)
+- **Min ROE:** 10% (or positive Free Cash Flow if the company is pre-profit)
+- **Max Debt/Equity:** 2.0
+- **Min Avg Daily Volume:** 500K shares
+
+## Technical Requirements
+- **Trend Filter (Buy Gate):** A stock must be trading above its 50-day moving average to be eligible for BUY in `/decide`. This is a hard gate — it prevents buying into confirmed downtrends. It does NOT apply to existing held positions.
+- **Relative Strength:** Prefer candidates showing positive 3-month price performance relative to SPY. Not a hard gate, but factors into conviction assessment during `/analyze`.
+
+## Benchmark
+- **Primary Benchmark:** S&P 500 (SPY)
+- Track SPY value alongside portfolio value in `performance/SNAPSHOTS.md` for return comparison, alpha calculation, and attribution analysis.
+
+## Scale-Up Confirmation
+A position at Initial (half-weight) stage is eligible for scale-up to Full when **at least 2 of the following 4 criteria** are met:
+1. **Price confirmation:** Price has held above Avg Cost (entry price) for 20+ trading days
+2. **Earnings confirmation:** Company reported positive earnings since entry (beat estimates or raised guidance)
+3. **Thesis confirmation:** Thesis reaffirmed on reanalysis with conviction maintained or upgraded
+4. **Catalyst confirmation:** A material catalyst identified in the original analysis has been realized
+
+These criteria are tracked in the Scale-Up Tracking section of each watchlist file and checked by `/decide` before executing scale-ups.
+
 ## Watchlist
 - **Max Active Items:** 30
 - **Stale Threshold:** 30 days since last analysis

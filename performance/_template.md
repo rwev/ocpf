@@ -13,6 +13,8 @@
 | Portfolio Value | ${value} |
 | Starting Capital | ${starting capital from CONFIG} |
 | Total Return | {X.XX}% (${dollar return}) |
+| Benchmark (SPY) Return | {X.XX}% (same period) |
+| Alpha vs Benchmark | {+/-X.XX}% |
 | Cash | ${cash} ({weight}%) |
 | Positions | {count} / {max} |
 
@@ -20,11 +22,13 @@
 
 ## Position Performance
 
-| Ticker | Shares | Avg Cost | Current | Gain/Loss | Gain % | Weight | Holding Days |
-|--------|--------|----------|---------|-----------|--------|--------|-------------|
+| Ticker | Shares | Avg Cost | Current | Gain/Loss | Gain % | Weight | Holding Days | vs SPY |
+|--------|--------|----------|---------|-----------|--------|--------|-------------|--------|
 
 **Best Performer:** {TICKER} ({+X.XX}%)
 **Worst Performer:** {TICKER} ({-X.XX}%)
+**Best Alpha:** {TICKER} ({+X.XX}% vs SPY over holding period)
+**Worst Alpha:** {TICKER} ({-X.XX}% vs SPY over holding period)
 
 ---
 
@@ -32,6 +36,25 @@
 
 | Sector | Weight | Position Count | Limit |
 |--------|--------|---------------|-------|
+
+---
+
+## Benchmark Comparison
+
+| Period | Portfolio | SPY | Alpha |
+|--------|-----------|-----|-------|
+| Since Inception | {X.XX}% | {X.XX}% | {+/-X.XX}% |
+| Last 30 Days | {X.XX}% | {X.XX}% | {+/-X.XX}% |
+| Last 90 Days | {X.XX}% | {X.XX}% | {+/-X.XX}% |
+
+---
+
+## Attribution
+
+- **Stock Selection Effect:** {how much alpha came from picking stocks that outperformed their sector — positive means good stock picking}
+- **Sector Allocation Effect:** {how much alpha came from overweighting outperforming sectors — positive means good sector calls}
+- **Top Alpha Contributors:** {top 2-3 positions ranked by alpha contribution to portfolio}
+- **Top Alpha Detractors:** {bottom 2-3 positions ranked by alpha drag on portfolio}
 
 ---
 
@@ -71,8 +94,8 @@
 
 ## Portfolio Value Over Time
 
-| Date | Portfolio Value | Total Return % |
-|------|----------------|---------------|
+| Date | Portfolio Value | Total Return % | SPY Price | SPY Return % | Alpha |
+|------|----------------|---------------|-----------|-------------|-------|
 
 ---
 
@@ -87,4 +110,4 @@
 ---
 
 ## Observations and Commentary
-{free-form analysis of portfolio performance, trends, and any concerns}
+{free-form analysis of portfolio performance, trends, benchmark-relative performance, and any concerns}
